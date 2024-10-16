@@ -1,7 +1,7 @@
-const axios = require('axios');
-const fs = require('node:fs');
-const path = require('node:path');
-const logger = require('../utils/logger');
+import axios from 'axios';
+import fs from 'node:fs';
+import path from 'node:path';
+import logger from '../utils/logger.js';
 
 const tempDir = path.join(__dirname, '../../tmp');
 

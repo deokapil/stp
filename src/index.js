@@ -1,8 +1,8 @@
-const fs = require('node:fs');
-const { parse } = require('csv-parser');
-const logger = require('./utils/logger');
-const downloadService = require('./services/download');
-const mongodbService = require('./services/mongodb');
+import fs from 'node:fs';
+import { parse } from 'csv-parser';
+import logger from './utils/logger.js';
+import downloadService from './services/download.js';
+import mongodbService from './services/mongodb.js';
 
 async function processCSV(filePath) {
   const results = [];
