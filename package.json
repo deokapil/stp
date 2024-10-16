@@ -10,3 +10,21 @@
   "author": "",
   "license": "ISC"
 }
+{
+  "name": "music-metadata-service",
+  "version": "1.0.0",
+  "description": "Node.js project for extracting music metadata",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.5.1",
+    "csv-parser": "^6.3.1",
+    "fpcalc": "^1.5.1",
+    "mongodb": "^6.1.0",
+    "winston": "^3.10.0"
+  }
+}
