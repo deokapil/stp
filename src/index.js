@@ -28,6 +28,15 @@ async function processCSV(filePath) {
         await mongodbService.saveData({ ...musicbrainzData, rowId: row[0] }); // Assuming row ID is in the first column
 
         logger.info(`Processed row ${row[0]}`);
+
+        // 6. Delete the downloaded file
+        fs.unlink(filePath, (err) => {
+          if (err) {
+            logger.error(`Error deleting file ${filePath}: ${err}`);
+          } else {
+            logger.info(`Deleted file: ${filePath}`);
+          }
+        });
       } catch (error) {
         logger.error(`Error processing row ${row[0]}: ${error}`);
       }
