@@ -10,7 +10,15 @@ async function processCSV(filePath) {
     .pipe(parse())
     .on('data', async (row) => {
       try {
-        // 1. Download the MP3 file (replace with your column index)
+        // 1. Check if data already exists in MongoDB
+        const existingData = await mongodbService.findDataByRowId(row[0]); // Assuming row ID is in the first column
+
+        if (existingData) {
+          logger.info(`Data for row ${row[0]} already exists in MongoDB. Skipping.`);
+          return;
+        }
+
+        // 2. Download the MP3 file (replace with your column index)
         const downloadUrl = row[6]; // Assuming MP3 URL is in the 7th column (index 6)
         const filePath = await downloadService.downloadFile(downloadUrl);
 
@@ -24,12 +32,12 @@ async function processCSV(filePath) {
         // 4. Get MusicBrainz details (Implementation needed in musicbrainz.js)
         const musicbrainzData = await musicbrainzService.getMusicBrainzData(acoustidId);
 
-        // 5. Save to MongoDB
+        // 6. Save to MongoDB
         await mongodbService.saveData({ ...musicbrainzData, rowId: row[0] }); // Assuming row ID is in the first column
 
         logger.info(`Processed row ${row[0]}`);
 
-        // 6. Delete the downloaded file
+        // 7. Delete the downloaded file
         fs.unlink(filePath, (err) => {
           if (err) {
             logger.error(`Error deleting file ${filePath}: ${err}`);
