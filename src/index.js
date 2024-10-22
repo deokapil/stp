@@ -1,5 +1,8 @@
 import fs from "node:fs";
 import pkg from "csv-parser";
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 import logger from "./utils/logger.js";
 import downloadService from "./services/download.js";
