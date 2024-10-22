@@ -1,20 +1,25 @@
-import fs from 'node:fs';
-import { parse } from 'csv-parser';
-import logger from './utils/logger.js';
-import downloadService from './services/download.js';
-import mongodbService from './services/mongodb.js';
+import fs from "node:fs";
+import pkg from "csv-parser";
+
+import logger from "./utils/logger.js";
+import downloadService from "./services/download.js";
+import mongodbService from "./services/mongodb.js";
+
+const { parse } = pkg;
 
 async function processCSV(filePath) {
   const results = [];
   fs.createReadStream(filePath)
-    .pipe(parse())
-    .on('data', async (row) => {
+    .pipe(parse({ skipLines: 1 }))
+    .on("data", async (row) => {
       try {
         // 1. Check if data already exists in MongoDB
         const existingData = await mongodbService.findDataByRowId(row[0]); // Assuming row ID is in the first column
 
         if (existingData) {
-          logger.info(`Data for row ${row[0]} already exists in MongoDB. Skipping.`);
+          logger.info(
+            `Data for row ${row[0]} already exists in MongoDB. Skipping.`
+          );
           return;
         }
 
@@ -23,14 +28,18 @@ async function processCSV(filePath) {
         const filePath = await downloadService.downloadFile(downloadUrl);
 
         // 2. Generate fingerprint (Implementation needed in fingerprint.js)
-        const fingerprint = await fingerprintService.generateFingerprint(filePath);
+        const fingerprint = await fingerprintService.generateFingerprint(
+          filePath
+        );
 
         // 3. Get Acoustid ID (Implementation needed in acoustid.js)
         const acoustidData = await acoustidService.getAcoustId(fingerprint);
         const acoustidId = acoustidData.results[0].id;
 
         // 4. Get MusicBrainz details (Implementation needed in musicbrainz.js)
-        const musicbrainzData = await musicbrainzService.getMusicBrainzData(acoustidId);
+        const musicbrainzData = await musicbrainzService.getMusicBrainzData(
+          acoustidId
+        );
 
         // 6. Save to MongoDB
         await mongodbService.saveData({ ...musicbrainzData, rowId: row[0] }); // Assuming row ID is in the first column
@@ -49,12 +58,12 @@ async function processCSV(filePath) {
         logger.error(`Error processing row ${row[0]}: ${error}`);
       }
     })
-    .on('end', () => {
+    .on("end", () => {
       logger.info(`CSV file "${filePath}" processed`);
     });
 }
 
 // Replace with your CSV file path
-const csvFilePath = 'path/to/your/file.csv';
+const csvFilePath = "/home/kapsi/projects/mayhem/test.csv";
 
 processCSV(csvFilePath);
